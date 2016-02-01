@@ -88,7 +88,7 @@ void loop() {
   } 
 	Serial.println();
 
-	unsigned int hex_num;
+  unsigned int hex_num;
   hex_num =  mfrc522.uid.uidByte[0] << 24;
   hex_num += mfrc522.uid.uidByte[1] << 16;
   hex_num += mfrc522.uid.uidByte[2] <<  8;
@@ -96,7 +96,7 @@ void loop() {
 
   int  NFC_id=  (int)hex_num;
 
-	sprintf(store_id,"%d" ,NFC_id);
+  sprintf(store_id,"%d" ,NFC_id);
 
   Serial.print("Store id is: ");
   Serial.println(store_id);
@@ -110,7 +110,7 @@ void loop() {
   client.println(req);
   client.println();
   Serial.println("Request sent");
- 	Serial.println(req);
+  Serial.println(req);
 
   
   // if there are incoming bytes available 
