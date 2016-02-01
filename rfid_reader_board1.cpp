@@ -20,9 +20,6 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Ethernet.h>
-#include <iostream>
-#include <string>
-#include <sstream>
 
 #define RST_PIN         9          // Configurable, see typical pin layout above
 #define SS_PIN          10         // Configurable, see typical pin layout above
@@ -31,9 +28,11 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
-byte mac[] = {  0x98, 0x4F, 0xEE, 0x01, 0xCD, 0x27 };
 
-//IPAddress server(192,168,1,103); // Our server
+//Use the mac address of the board you are uploading the code to
+//byte mac[] = {  0x98, 0x4F, 0xEE, 0x01, 0xCD, 0x27 }; //Board-1
+byte mac[] = { 0x98, 0x4F, 0xEE, 0x01, 0xCE, 0x9D }; //Board-2
+
 IPAddress server(127,0,0,1); // Chip server
 
 // Initialize the Ethernet client library
@@ -80,50 +79,38 @@ void loop() {
     return;
   }
 
+  client.connect(server, 3000);
+
   char store_id[30];
   
   for (byte i = 0; i < mfrc522.uid.size; i++) {
     Serial.print(mfrc522.uid.uidByte[i]);
   } 
-Serial.println();
+	Serial.println();
 
-				unsigned int hex_num;
-          hex_num =  mfrc522.uid.uidByte[0] << 24;
-          hex_num += mfrc522.uid.uidByte[1] << 16;
-          hex_num += mfrc522.uid.uidByte[2] <<  8;
-          hex_num += mfrc522.uid.uidByte[3];
+	unsigned int hex_num;
+  hex_num =  mfrc522.uid.uidByte[0] << 24;
+  hex_num += mfrc522.uid.uidByte[1] << 16;
+  hex_num += mfrc522.uid.uidByte[2] <<  8;
+  hex_num += mfrc522.uid.uidByte[3];
 
-         int  NFC_id=  (int)hex_num;
+  int  NFC_id=  (int)hex_num;
 
-sprintf(store_id,"%d" ,NFC_id);
+	sprintf(store_id,"%d" ,NFC_id);
 
   Serial.print("Store id is: ");
   Serial.println(store_id);
 
-
-//------------ETHERNET PART----------------
-
- if(!client.connected()) {
-     Serial.println("Inside if !connected");
-        if (client.connect(server, 3000)) {
-          Serial.println("connected again");
-        } 
-        else {
-          // if you didn't get a connection to the server:
-          Serial.println("connection failed on retry");
-        }
-    }
-
   char req[80];
   strcpy(req, "GET /?uid=");
   strcat(req, store_id);
-  strcat(req, "&lat=48.139867&long=11.560935&sensor='MUCHbf' HTTP/1.0");
+  strcat(req, "&lat=48.139867&long=11.560935&sensor=MUCHbf HTTP/1.0");
     
-          // Make a HTTP request:
-          client.println(req);
-          client.println();
-          Serial.println("Request sent");
-         Serial.println(req);
+  // Make a HTTP request:
+  client.println(req);
+  client.println();
+  Serial.println("Request sent");
+ 	Serial.println(req);
 
   
   // if there are incoming bytes available 
